@@ -42,7 +42,7 @@
     "release:major": "npm version major && npm publish",
     "lint": "semistandard --fix",
     "dtslint": "dtslint types",
-    "mocha": "mocha --opts mocha.opts",
+    "mocha": "mocha --recursive test/ --exit",
     "coverage": "istanbul cover node_modules/mocha/bin/_mocha -- --opts mocha.opts",
     "test": "npm run lint && npm run dtslint && npm run coverage",
     "mongodb": "run-rs -v 4.0.0"
