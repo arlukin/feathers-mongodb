@@ -1,7 +1,7 @@
 {
   "name": "feathers-mongodb",
   "description": "Feathers MongoDB service",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "homepage": "https://github.com/feathersjs-ecosystem/feathers-mongodb",
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
   "types": "types",
   "scripts": {
     "publish": "git push origin --tags && npm run changelog && git push origin",
-    "changelog": "github_changelog_generator && git add CHANGELOG.md && git commit -am \"Updating changelog\"",
+    "changelog": "github_changelog_generator --user feathersjs-ecosystem --project feathers-mongodb && git add CHANGELOG.md && git commit -am \"Updating changelog\"",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish",
@@ -65,7 +65,7 @@
     "nanoid": "^3.1.10"
   },
   "devDependencies": {
-    "@feathersjs/adapter-tests": "^4.5.2",
+    "@feathersjs/adapter-tests": "^4.5.4",
     "@feathersjs/express": "^4.5.4",
     "@feathersjs/feathers": "^4.5.3",
     "@feathersjs/socketio": "^4.5.4",
