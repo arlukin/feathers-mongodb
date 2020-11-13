@@ -10,7 +10,7 @@
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "mocha-transactions"],
+      "runtimeArgs": ["run", "mocha"],
       "port": 9229,
       "console": "internalConsole",
       "outputCapture": "std"

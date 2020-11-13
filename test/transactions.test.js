@@ -1,6 +1,3 @@
-// Set Debug mode
-// process.env.DEBUG = 'exception,database';
-
 const { expect } = require('chai');
 const { MongoClient, ObjectID } = require('mongodb');
 const feathers = require('@feathersjs/feathers');
@@ -155,9 +152,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
       try {
         await startSessionHook(localContext);
         await lockDataHook(localContext);
-        console.log(localContext);
         const people = (await peopleService.find(params))[0];
-        console.log(people);
         people.timeoutTest = 'timeout';
         await peopleService.patch(people._id, people, params);
         await _sleep(90);
@@ -167,7 +162,6 @@ describe('Feathers MongoDB Service - Transactions', () => {
           "Transaction aborted (getSessionObject: Session doesn't exist) sessionId undefined"
         );
       } catch (err) {
-        console.log('moasdf');
         localContext.error = { message: err.message };
         await errorSessionHook(localContext);
       }
