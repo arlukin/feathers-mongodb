@@ -106,7 +106,7 @@ describe('Feathers MongoDB Service', () => {
           service({
             Model: db.collection('people-estimated-count'),
             events: ['testing'],
-            useEstimatedDocumentCount: true,
+            useEstimatedDocumentCount: true
           })
         );
 
