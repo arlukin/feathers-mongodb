@@ -68,7 +68,7 @@ const testSuite = adapterTests([
   '.get + id + query id',
   '.remove + id + query id',
   '.update + id + query id',
-  '.patch + id + query id',
+  '.patch + id + query id'
 ]);
 
 describe('Feathers MongoDB Service', () => {
@@ -80,7 +80,7 @@ describe('Feathers MongoDB Service', () => {
   before(() =>
     MongoClient.connect('mongodb://localhost:27017/feathers-test', {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      useUnifiedTopology: true
     }).then(function (client) {
       mongoClient = client;
       db = client.db('feathers-test');
@@ -89,7 +89,7 @@ describe('Feathers MongoDB Service', () => {
         .use(
           '/people',
           service({
-            events: ['testing'],
+            events: ['testing']
           })
         )
         .use(
@@ -97,7 +97,7 @@ describe('Feathers MongoDB Service', () => {
           service({
             Model: db.collection('people-customid'),
             id: 'customid',
-            events: ['testing'],
+            events: ['testing']
           })
         );
 
@@ -159,11 +159,11 @@ describe('Feathers MongoDB Service', () => {
     describe('multiOptions', () => {
       const params = {
         query: {
-          age: 21,
+          age: 21
         },
         options: {
-          limit: 5,
-        },
+          limit: 5
+        }
       };
 
       it('returns valid result when passed an ID', () => {
@@ -211,7 +211,7 @@ describe('Feathers MongoDB Service', () => {
   describe('Special collation param', () => {
     let peopleService, people;
 
-    function indexOfName(results, name) {
+    function indexOfName (results, name) {
       let index;
       results.every(function (person, i) {
         if (person.name === name) {
@@ -230,7 +230,7 @@ describe('Feathers MongoDB Service', () => {
       people = await Promise.all([
         peopleService.create({ name: 'AAA' }),
         peopleService.create({ name: 'aaa' }),
-        peopleService.create({ name: 'ccc' }),
+        peopleService.create({ name: 'ccc' })
       ]);
     });
 
@@ -239,7 +239,7 @@ describe('Feathers MongoDB Service', () => {
       await Promise.all([
         peopleService.remove(people[0]._id),
         peopleService.remove(people[1]._id),
-        peopleService.remove(people[2]._id),
+        peopleService.remove(people[2]._id)
       ]).catch(() => {});
     });
 
@@ -247,8 +247,8 @@ describe('Feathers MongoDB Service', () => {
       const person = await peopleService.create({ name: 'Coerce' });
       const results = await peopleService.find({
         query: {
-          _id: new ObjectID(person._id),
-        },
+          _id: new ObjectID(person._id)
+        }
       });
 
       expect(results).to.have.lengthOf(1);
@@ -259,7 +259,7 @@ describe('Feathers MongoDB Service', () => {
     it('works with normal string _id', async () => {
       const person = await peopleService.create({
         _id: 'lessonKTDA08',
-        name: 'Coerce',
+        name: 'Coerce'
       });
       const result = await peopleService.get(person._id);
 
@@ -270,7 +270,7 @@ describe('Feathers MongoDB Service', () => {
 
     it('sorts with default behavior without collation param', async () => {
       const results = await peopleService.find({
-        query: { $sort: { name: -1 } },
+        query: { $sort: { name: -1 } }
       });
 
       expect(indexOfName(results, 'aaa')).to.be.below(
@@ -281,7 +281,7 @@ describe('Feathers MongoDB Service', () => {
     it.skip('sorts using collation param if present', async () => {
       const results = await peopleService.find({
         query: { $sort: { name: -1 } },
-        collation: { locale: 'en', strength: 1 },
+        collation: { locale: 'en', strength: 1 }
       });
 
       expect(indexOfName(results, 'AAA')).to.be.below(
@@ -301,7 +301,7 @@ describe('Feathers MongoDB Service', () => {
     it('removes using collation param if present', async () => {
       await peopleService.remove(null, {
         query: { name: { $gt: 'AAA' } },
-        collation: { locale: 'en', strength: 1 },
+        collation: { locale: 'en', strength: 1 }
       });
 
       const results = await peopleService.find();
@@ -326,7 +326,7 @@ describe('Feathers MongoDB Service', () => {
         { age: 110 },
         {
           query: { name: { $gt: 'AAA' } },
-          collation: { locale: 'en', strength: 1 },
+          collation: { locale: 'en', strength: 1 }
         }
       );
 
@@ -339,7 +339,7 @@ describe('Feathers MongoDB Service', () => {
         null,
         { $push: { friends: 'Adam' } },
         {
-          query: { name: { $gt: 'AAA' } },
+          query: { name: { $gt: 'AAA' } }
         }
       );
 
@@ -348,7 +348,7 @@ describe('Feathers MongoDB Service', () => {
       const patched = await peopleService.patch(
         null,
         {
-          $push: { friends: 'Bell' },
+          $push: { friends: 'Bell' }
         },
         { query: { name: { $gt: 'AAA' } } }
       );
@@ -359,7 +359,7 @@ describe('Feathers MongoDB Service', () => {
     it('overrides default index selection using hint param if present', async () => {
       const indexed = await peopleService.create({
         name: 'Indexed',
-        team: 'blue',
+        team: 'blue'
       });
 
       const result = await peopleService.find({ query: {}, hint: { name: 1 } });

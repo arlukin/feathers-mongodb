@@ -1,5 +1,5 @@
 // Set Debug mode
-//process.env.DEBUG = 'exception,database';
+// process.env.DEBUG = 'exception,database';
 
 const { expect } = require('chai');
 const { MongoClient, ObjectID } = require('mongodb');
@@ -21,12 +21,12 @@ describe('Feathers MongoDB Service - Transactions', () => {
   before(async () => {
     mongoClient = await MongoClient.connect(mongoUrl, {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      useUnifiedTopology: true
     });
     db = mongoClient.db('feathers-test');
     await Promise.all([
       db.collection('people').removeMany(),
-      db.collection('people_details').removeMany(),
+      db.collection('people_details').removeMany()
     ]);
 
     // Setup people service
@@ -36,7 +36,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
     people.hooks({
       before: { all: [startSession({ client: mongoClient, database: db })] },
       after: { all: [endSession()] },
-      error: { all: [errorSession()] },
+      error: { all: [errorSession()] }
     });
 
     // Setup people details service
@@ -46,7 +46,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
     peopleDetails.hooks({
       before: { all: [startSession({ client: mongoClient, database: db })] },
       after: { all: [endSession()], patch: [detailsAfterHook()] },
-      error: { all: [errorSession()] },
+      error: { all: [errorSession()] }
     });
   });
 
@@ -66,7 +66,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
       endSessionHook = endSession();
       errorSessionHook = errorSession();
       lockDataHook = lockData({
-        collections: [{ collection: 'people', query: 'name', field: 'name' }],
+        collections: [{ collection: 'people', query: 'name', field: 'name' }]
       });
 
       // Setup test data
@@ -74,7 +74,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
       context = {
         method: 'post',
         path: 'people',
-        params: { query: { name } },
+        params: { query: { name } }
       };
 
       // Create people test data
@@ -83,7 +83,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
         peopleService.create({ name, age: 0 }),
         peopleService.create({ name: 'AAA' }),
         peopleService.create({ name: 'aaa' }),
-        peopleService.create({ name: 'ccc' }),
+        peopleService.create({ name: 'ccc' })
       ]);
 
       // Create people_details test data
@@ -93,7 +93,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
         peopleDetailsService.create({ _id, name, age: 0, log: [] }),
         peopleDetailsService.create({ _id: people[1]._id, log: [] }),
         peopleDetailsService.create({ _id: people[2]._id, log: [] }),
-        peopleDetailsService.create({ _id: people[3]._id, log: [] }),
+        peopleDetailsService.create({ _id: people[3]._id, log: [] })
       ]);
     });
 
@@ -107,7 +107,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
           peopleDetailsService.remove(people[0]._id),
           peopleDetailsService.remove(people[1]._id),
           peopleDetailsService.remove(people[2]._id),
-          peopleDetailsService.remove(people[3]._id),
+          peopleDetailsService.remove(people[3]._id)
         ]).catch();
       }
     });
@@ -127,8 +127,8 @@ describe('Feathers MongoDB Service - Transactions', () => {
       const person = await peopleService.create({ name });
       const results = await peopleService.find({
         query: {
-          _id: new ObjectID(person._id),
-        },
+          _id: new ObjectID(person._id)
+        }
       });
 
       await endSessionHook(context);
@@ -173,7 +173,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
       }
     });
 
-    function _sleep(ms) {
+    function _sleep (ms) {
       return new Promise((resolve) => {
         setTimeout(resolve, ms);
       });
@@ -199,7 +199,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
       expect(peopleDetails.log).to.have.lengthOf(age);
     });
 
-    async function doTrans() {
+    async function doTrans () {
       const localContext = cloneDeep(context);
       const { params } = localContext;
       try {
