@@ -89,7 +89,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
       // Create people_details test data
       peopleDetailsService = app.service('/people_details');
       const _id = people[0]._id;
-      peopleDetails = await Promise.all([
+      await Promise.all([
         peopleDetailsService.create({ _id, name, age: 0, log: [] }),
         peopleDetailsService.create({ _id: people[1]._id, log: [] }),
         peopleDetailsService.create({ _id: people[2]._id, log: [] }),
@@ -108,7 +108,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
           peopleDetailsService.remove(people[1]._id),
           peopleDetailsService.remove(people[2]._id),
           peopleDetailsService.remove(people[3]._id),
-        ]).catch((err) => {});
+        ]).catch();
       }
     });
 
@@ -202,7 +202,6 @@ describe('Feathers MongoDB Service - Transactions', () => {
     async function doTrans() {
       const localContext = cloneDeep(context);
       const { params } = localContext;
-      const query = params.query;
       try {
         await startSessionHook(localContext);
         await lockDataHook(localContext);
@@ -237,7 +236,7 @@ const detailsAfterHook = function (options = {}) {
   return async (context) => {
     const { params, app } = context;
     const log = context.data.log;
-    const result = await app
+    await app
       .service('people')
       .patch(context.id, { last: log[log.length - 1] }, params);
     return context;
