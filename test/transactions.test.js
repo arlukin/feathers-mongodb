@@ -1,5 +1,5 @@
 // Set Debug mode
-// process.env.DEBUG = 'exception,database';
+process.env.DEBUG = 'exception,database';
 
 const { expect } = require('chai');
 const { MongoClient, ObjectID } = require('mongodb');
@@ -113,7 +113,7 @@ describe('Feathers MongoDB Service - Transactions', () => {
     });
 
     it('simple nested start/stop session', async () => {
-      let { params } = context;
+      const { params } = context;
 
       await startSessionHook(context);
       expect(getSessionCounter(params.sessionId)).to.equal(1);
@@ -147,17 +147,49 @@ describe('Feathers MongoDB Service - Transactions', () => {
       await peopleService.remove(person._id);
     });
 
+    it('transactions timeout', async function () {
+      this.timeout(20000);
+
+      const localContext = cloneDeep(context);
+      const { params } = localContext;
+      try {
+        await startSessionHook(localContext);
+        await lockDataHook(localContext);
+        console.log(localContext);
+        const people = (await peopleService.find(params))[0];
+        console.log(people);
+        people.timeoutTest = 'timeout';
+        await peopleService.patch(people._id, people, params);
+        await _sleep(90);
+
+        await endSessionHook(localContext);
+        expect(() => getSessionCounter(params.sessionId)).to.throw(
+          "Transaction aborted (getSessionObject: Session doesn't exist) sessionId undefined"
+        );
+      } catch (err) {
+        console.log('moasdf');
+        localContext.error = { message: err.message };
+        await errorSessionHook(localContext);
+      }
+    });
+
+    function _sleep(ms) {
+      return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+      });
+    }
+
     it('nested start/stop transactions', async () => {
-      let query = context.params.query;
-      let allPromieses = [];
+      const query = context.params.query;
+      const allPromieses = [];
       let age = 0;
       const numberOfTests = 10;
       do {
-        allPromieses.push(doTrans('trans: ' + age, { age }));
+        allPromieses.push(doTrans());
       } while (++age < numberOfTests - 1);
       await Promise.all(allPromieses);
       age++;
-      await doTrans('trans: LAST');
+      await doTrans();
       const people = (await peopleService.find({ query }))[0];
       expect(people).to.have.all.keys('_id', 'name', 'age', 'last', 'myLock');
       expect(people.age).to.equal(age);
@@ -167,16 +199,19 @@ describe('Feathers MongoDB Service - Transactions', () => {
       expect(peopleDetails.log).to.have.lengthOf(age);
     });
 
-    async function doTrans(txt) {
+    async function doTrans() {
       const localContext = cloneDeep(context);
       const { params } = localContext;
-      let query = params.query;
+      const query = params.query;
       try {
         await startSessionHook(localContext);
         await lockDataHook(localContext);
 
-        let people = (await peopleService.find(params))[0];
-        let peopleDetails = await peopleDetailsService.get(people._id, params);
+        const people = (await peopleService.find(params))[0];
+        const peopleDetails = await peopleDetailsService.get(
+          people._id,
+          params
+        );
 
         people.age++;
         await peopleService.patch(people._id, people, params);
