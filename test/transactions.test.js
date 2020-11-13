@@ -1,5 +1,5 @@
 // Set Debug mode
-process.env.DEBUG = 'exception,database';
+//process.env.DEBUG = 'exception,database';
 
 const { expect } = require('chai');
 const { MongoClient, ObjectID } = require('mongodb');
